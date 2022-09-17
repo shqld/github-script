@@ -1,0 +1,183 @@
+name: Test
+
+on:
+    workflow_call:
+        inputs:
+            runs-on:
+                type: string
+                default: ubuntu-latest
+                required: true
+
+jobs:
+    exports:
+        runs-on: ${{ inputs.runs-on }}
+        strategy:
+            fail-fast: true
+            matrix:
+                script:
+                    - ./tests/exports/default-arrow-async.ts
+                    - ./tests/exports/default-arrow.ts
+                    - ./tests/exports/default-function-async.ts
+                    - ./tests/exports/default-function.ts
+                    - ./tests/exports/main-const-async.ts
+                    - ./tests/exports/main-const.ts
+                    - ./tests/exports/main-function-async.ts
+                    - ./tests/exports/main-function.ts
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/download-artifact@v3
+              with:
+                  name: build
+                  path: action
+
+            - name: Run Test Script
+              id: run-test-script
+              uses: ./action
+              with:
+                  path: ${{ matrix.script }}
+
+            - name: Check Test Result
+              shell: bash
+              run: |
+                  test ${{ steps.run-test-script.outputs.result }} = "hello, world"
+
+    fail-in-script:
+        runs-on: ${{ inputs.runs-on }}
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/download-artifact@v3
+              with:
+                  name: build
+                  path: action
+
+            - name: Run Test Script
+              id: run-test-script
+              continue-on-error: true
+              uses: ./action
+              with:
+                  path: ./tests/integration/failure.ts
+
+            - name: Check Test Result
+              shell: bash
+              run: |
+                  test ${{ steps.run-test-script.outcome }} = "failure"
+
+    args:
+        runs-on: ${{ inputs.runs-on }}
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/download-artifact@v3
+              with:
+                  name: build
+                  path: action
+
+            - name: Run Test Script
+              id: run-test-script
+              uses: ./action
+              with:
+                  path: ./tests/integration/args.ts
+
+    zx:
+        runs-on: ${{ inputs.runs-on }}
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/download-artifact@v3
+              with:
+                  name: build
+                  path: action
+
+            - name: Run Test Script
+              id: run-test-script
+              uses: ./action
+              with:
+                  path: ./tests/integration/zx.ts
+
+            - name: Check Test Result
+              shell: bash
+              run: |
+                  test ${{ steps.run-test-script.outputs.result }} = "hello, world"
+
+    node_modules:
+        runs-on: ${{ inputs.runs-on }}
+        strategy:
+            fail-fast: true
+            matrix:
+                module:
+                    - chalk
+                    - chalk@5
+                    - chalk@^5.0.1
+                    - chalk@5.x
+                    - chalk@5.0.1
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/download-artifact@v3
+              with:
+                  name: build
+                  path: action
+
+            - name: Run Test Script
+              id: run-test-script
+              uses: ./action
+              with:
+                  node_modules: |
+                      ${{ matrix.module }}
+                      zx
+                  path: ./tests/integration/node_modules.ts
+
+            - name: Check Test Result
+              shell: bash
+              run: |
+                  test ${{ steps.run-test-script.outputs.result }} = "hello, world"
+
+            - name: Check Installed Modules
+              shell: bash
+              run: |
+                  yarn_list=$(yarn list)
+
+                  echo $yarn_list | grep chalk@5.0.
+                  echo $yarn_list | grep zx
+
+    inputs:
+        runs-on: ${{ inputs.runs-on }}
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/download-artifact@v3
+              with:
+                  name: build
+                  path: action
+
+            - name: Run Test Script / Both inputs
+              id: run-test-script-both-inputs
+              continue-on-error: true
+              uses: ./action
+              with:
+                  path: some_path
+                  script: some_script
+
+            - name: Run Test Script / No inputs
+              id: run-test-script-no-inputs
+              continue-on-error: true
+              uses: ./action
+
+            - name: Run Test Script / Only path
+              id: run-test-script-only-path
+              continue-on-error: true
+              uses: ./action
+              with:
+                  path: ./tests/integration/success.ts
+
+            - name: Run Test Script / Only script
+              id: run-test-script-only-script
+              continue-on-error: true
+              uses: ./action
+              with:
+                  script: |
+                      process.exit(0)
+
+            - name: Check Test Result
+              shell: bash
+              run: |
+                  test ${{ steps.run-test-script-both-inputs.outcome }} = "failure"
+                  test ${{ steps.run-test-script-no-inputs.outcome }} = "failure"
+                  test ${{ steps.run-test-script-only-path.outcome }} = "success"
+                  test ${{ steps.run-test-script-only-script.outcome }} = "success"

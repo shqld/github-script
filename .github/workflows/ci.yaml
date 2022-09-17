@@ -1,0 +1,80 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+            - run: yarn install
+            - run: yarn build
+            - uses: actions/upload-artifact@v3
+              with:
+                  name: dist
+                  path: dist
+
+    test-ubuntu:
+        needs: build
+        uses: ./.github/workflows/integration-test.yaml
+        with:
+            runs-on: ubuntu-latest
+
+    test-windows:
+        needs: build
+        uses: ./.github/workflows/integration-test.yaml
+        with:
+            runs-on: windows-latest
+
+    staging:
+        needs:
+            - build
+            - test-ubuntu
+            - test-windows
+        concurrency:
+            group: staging
+            cancel-in-progress: false
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  ref: staging
+
+            - run: |
+                  git config user.email ${{ github.actor }}
+                  git config user.name ${{ github.actor }}
+
+            - uses: actions/download-artifact@v3
+              with:
+                  name: dist
+                  path: dist
+
+            - id: fetch-main-branch
+              run: |
+                  git fetch origin main:main --depth 1
+                  echo ::set-output name=commit_message::$(git show main -s --format=%B)
+
+            - run: |
+                  cat << EOF > .gitignore
+                      *.log
+                      node_modules
+                  EOF
+
+            - run: |
+                  cat << EOF | xargs -I{} sh -c 'git show main:{} > {}'
+                    LICENSE
+                    action.yaml
+                    package.json
+                  EOF
+
+            - run: |
+                  git add .
+                  git status
+
+            - run: |
+                  git commit --all --message '${{ steps.fetch-main-branch.outputs.commit_message }}'
+                  git push origin staging
