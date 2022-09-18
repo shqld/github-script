@@ -1,6 +1,10 @@
-name: Action Script
+name: "@shqld / GitHub Script"
+author: shqld
+description: Better GitHub Script
 
-description: Run TypeScript
+branding:
+    color: blue
+    icon: chevron-right
 
 inputs:
     path:
