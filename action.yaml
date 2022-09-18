@@ -1,0 +1,109 @@
+name: Action Script
+
+description: Run TypeScript
+
+inputs:
+    path:
+        description: |
+            The path to script file
+            ---
+            Exactly one of 'path' or 'script' must be present.
+        required: false
+    script:
+        description: |
+            The script to run
+            ---
+            Exactly one of 'path' or 'script' must be present.
+
+            NOTE: the script must be written in typescript
+        required: false
+    node_modules:
+        description: |
+            Node modules to install
+            ---
+            By default, specified modules are installed in the working directory.
+        required: false
+
+    # inherits from https://github.com/actions/github-script
+    github-token:
+        description: The GitHub token used to create an authenticated client
+        default: ${{ github.token }}
+        required: false
+    debug:
+        description: Whether to tell the GitHub client to log details of its requests
+        default: "false"
+    user-agent:
+        description: An optional user-agent string
+        default: actions/github-script
+    previews:
+        description: A comma-separated list of API previews to accept
+    result-encoding:
+        description: Either "string" or "json" (default "json")—how the result will be encoded
+        default: json
+
+outputs:
+    result:
+        description: The return value of the script, stringified with `JSON.stringify`
+        value: ${{ steps.run-script.outputs.result }}
+
+runs:
+    using: composite
+    steps:
+        - name: Check Inputs
+          if: (inputs.path && inputs.script) || (!inputs.path && !inputs.script)
+          shell: bash
+          run: |
+              echo ${{
+                inputs.path
+                  && 'Both of path and script must not be present at the same time'
+                  || 'Either of path or script must be present'
+              }}
+              exit 1
+
+        - name: Yarn add addional modules
+          if: inputs.node_modules
+          shell: bash
+          run: |
+              node_modules=$(echo '${{ inputs.node_modules }}' | tr '\n' ' ')
+              yarn add --silent $node_modules
+              yarn list
+
+        - name: Normalize 'action_path'
+          id: normalize-action-path
+          shell: bash
+          run: |
+              # https://github.com/actions/runner/issues/1066 
+              echo ::set-output name=action_path::${GITHUB_ACTION_PATH//\\//}
+
+        - uses: actions/github-script@v6
+          id: run-script
+          with:
+              github-token: ${{ inputs.github-token }}
+              debug: ${{ inputs.debug }}
+              user-agent: ${{ inputs.user-agent }}
+              previews: ${{ inputs.previews }}
+              result-encoding: ${{ inputs.result-encoding }}
+              script: |
+                  __original_require__('${{ steps.normalize-action-path.outputs.action_path }}')
+
+                  ${{ inputs.script }}
+
+                  const scriptPath = '${{ inputs.path }}'
+
+                  if (scriptPath) {
+                    const script = require(scriptPath)
+                    const main = script.default ?? script.main
+
+                    if (typeof main === 'function') {
+                        return await main({ 
+                            github,
+                            context,
+                            core,
+                            glob,
+                            io,
+                            exec,
+                            require,
+                            __original_require__,
+                        })
+                    }
+                  }
