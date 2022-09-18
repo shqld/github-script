@@ -6,7 +6,8 @@
     "author": "Sho Miyamoto <me@shqld.dev>",
     "license": "MIT",
     "scripts": {
-        "build": "ncc build src/index.ts -o dist --minify"
+        "build": "ncc build src/index.ts -o dist --minify",
+        "test": "ls tests/unit/*.sh | xargs -P0 -n1 bash"
     },
     "dependencies": {
         "@actions/core": "^1.9.1",
