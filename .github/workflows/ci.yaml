@@ -69,6 +69,7 @@ jobs:
                     LICENSE
                     action.yaml
                     package.json
+                    README.md
                   EOF
 
             - run: |
