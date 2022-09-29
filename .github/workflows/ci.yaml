@@ -19,14 +19,43 @@ jobs:
                   name: dist
                   path: dist
 
+    publish-test-packages:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - uses: actions/checkout@v3
+            - uses: dorny/paths-filter@v2
+              id: changes
+              with:
+                  filters: |
+                      test-packages:
+                        - "test/packages/**"
+            - if: steps.changes.outputs.test-packages == 'true'
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "16.x"
+                  registry-url: "https://npm.pkg.github.com"
+                  scope: "@shqld"
+            - if: steps.changes.outputs.test-packages == 'true'
+              run: |
+                  ls tests/packages | xargs -I{} sh -c 'cd tests/packages/{}; npm publish'
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     test-ubuntu:
-        needs: build
+        needs:
+            - build
+            - publish-test-packages
         uses: ./.github/workflows/integration-test.yaml
         with:
             runs-on: ubuntu-latest
 
     test-windows:
-        needs: build
+        needs:
+            - build
+            - publish-test-packages
         uses: ./.github/workflows/integration-test.yaml
         with:
             runs-on: windows-latest

@@ -27,6 +27,11 @@ inputs:
             ---
             By default, specified modules are installed in the working directory.
         required: false
+    registry-url:
+        description: |
+            Regitry URL where to install packages
+        required: false
+        default: "https://registry.npmjs.org"
 
     # inherits from https://github.com/actions/github-script
     github-token:
@@ -68,8 +73,13 @@ runs:
           if: inputs.node_modules
           shell: bash
           run: |
+              if ! test -f '.npmrc'; then
+                touch .npmrc
+                echo '//${{ inputs.registry-url }}/:_authToken=${{ env.NODE_AUTH_TOKEN }}' >> .npmrc
+              fi
+
               node_modules=$(echo '${{ inputs.node_modules }}' | tr '\n' ' ')
-              yarn add --silent $node_modules
+              yarn add --silent $node_modules --registry '${{ inputs.registry-url }}'
               yarn list
 
         - name: Normalize 'action_path'
