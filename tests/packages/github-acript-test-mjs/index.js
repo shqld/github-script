@@ -1,1 +1,1 @@
-console.log('@shqld/github-acript-test-mjs')
+export default '@shqld/github-acript-test-mjs'

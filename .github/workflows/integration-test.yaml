@@ -105,9 +105,9 @@ jobs:
                 module:
                     - "@shqld/github-acript-test-cjs"
                     - "@shqld/github-acript-test-cjs@1"
-                    - "@shqld/github-acript-test-cjs@^1.0.2"
+                    - "@shqld/github-acript-test-cjs@^1.0.3"
                     - "@shqld/github-acript-test-cjs@1.x"
-                    - "@shqld/github-acript-test-cjs@1.0.2"
+                    - "@shqld/github-acript-test-cjs@1.0.3"
         permissions:
             contents: read
             packages: read
@@ -130,7 +130,6 @@ jobs:
               with:
                   node_modules: |
                       ${{ matrix.module }}
-                      zx
                   path: ./tests/integration/node_modules.ts
                   registry-url: https://npm.pkg.github.com
               env:
@@ -146,8 +145,7 @@ jobs:
               run: |
                   yarn_list=$(yarn list)
 
-                  echo $yarn_list | grep chalk@5.0.
-                  echo $yarn_list | grep zx
+                  echo $yarn_list | grep @shqld/github-acript-test-cjs@1
 
     inputs:
         runs-on: ${{ inputs.runs-on }}
