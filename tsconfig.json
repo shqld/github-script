@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
       "target": "es2015",
-      "moduleResolution": "node",
+      "moduleResolution": "node16",
       "esModuleInterop": true
     },
     "exclude": ["./tests/*"],
