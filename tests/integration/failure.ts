@@ -1,5 +1,5 @@
-import { Main } from '../../src/types'
+import { main } from '../../src'
 
-export const main: Main = ({ github, context, core, exec, glob, io }) => {
+export default main(({ github, context, core, exec, glob, io }) => {
     process.exit(1)
-}
+})

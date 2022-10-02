@@ -101,7 +101,7 @@ runs:
 
                   if (scriptPath) {
                     const script = require(scriptPath)
-                    const main = script.default ?? script.main
+                    const main = script.default
 
                     if (typeof main === 'function') {
                         return await main({ 

@@ -1,29 +1,31 @@
 import { ok } from 'node:assert/strict'
-import { Main } from '../../src/types'
+import { main } from '../../src'
 
-export const main: Main = ({
-    github,
-    context,
-    core,
-    exec,
-    glob,
-    io,
-    require,
-    __original_require__,
+export default main(
+    ({
+        github,
+        context,
+        core,
+        exec,
+        glob,
+        io,
+        require,
+        __original_require__,
 
-    ...args
-}) => {
-    ok(isObject(github))
-    ok(isObject(context))
-    ok(isObject(core))
-    ok(isObject(exec))
-    ok(isObject(glob))
-    ok(isObject(io))
-    ok(typeof require === 'function')
-    ok(typeof __original_require__ === 'function')
+        ...args
+    }) => {
+        ok(isObject(github))
+        ok(isObject(context))
+        ok(isObject(core))
+        ok(isObject(exec))
+        ok(isObject(glob))
+        ok(isObject(io))
+        ok(typeof require === 'function')
+        ok(typeof __original_require__ === 'function')
 
-    ok(Object.keys(args).length === 0)
-}
+        ok(Object.keys(args).length === 0)
+    }
+)
 
 function isObject(obj: unknown) {
     return typeof obj === 'object' && obj !== null && !Array.isArray(obj)
