@@ -75,7 +75,7 @@ runs:
           run: |
               node_modules=$(echo '${{ inputs.node_modules }}' | tr '\n' ' ')
               yarn add --silent $node_modules
-              yarn list
+              # yarn list
 
         - name: Normalize 'action_path'
           id: normalize-action-path
