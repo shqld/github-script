@@ -1,5 +1,5 @@
 import '@types/node'
-import type * as _ from 'zx/globals'
+import 'zx/globals'
 
 import type { Octokit as github } from '@octokit/rest'
 import type { context } from '@actions/github'
