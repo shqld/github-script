@@ -1,11 +1,14 @@
 {
     "name": "github-script",
     "version": "1.0.0",
+    "main": "dist/local",
     "repository": "https://github.com/shqld/action-script",
     "author": "Sho Miyamoto <me@shqld.dev>",
     "license": "MIT",
     "scripts": {
-        "build": "ncc build src/ci.ts -o dist --minify",
+        "build": "yarn build:local && yarn build:ci",
+        "build:local": "tsc --outDir dist/local",
+        "build:ci": "ncc build src/ci.ts -o dist/ci --minify",
         "test": "ls tests/unit/*.sh | xargs -P0 -n1 bash"
     },
     "dependencies": {
