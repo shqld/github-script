@@ -1,7 +1,8 @@
 /// <reference types="node" resolution-mode="require"/>
+/// <reference types="zx/globals" resolution-mode="require"/>
 
-import 'sucrase/register'
-import 'zx/globals'
+require('sucrase/register')
+require('zx/globals')
 
 import { context, getOctokit } from '@actions/github'
 import * as core from '@actions/core'
