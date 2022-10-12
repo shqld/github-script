@@ -93,7 +93,9 @@ runs:
               previews: ${{ inputs.previews }}
               result-encoding: ${{ inputs.result-encoding }}
               script: |
-                  __original_require__('${{ steps.normalize-action-path.outputs.action_path }}')
+                  __original_require__(
+                    path.join('${{ steps.normalize-action-path.outputs.action_path }}', 'dist/ci')
+                  )
 
                   ${{ inputs.script }}
 
