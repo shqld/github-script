@@ -1,15 +1,25 @@
 /// <reference types="node" resolution-mode="require"/>
 /// <reference types="zx/globals" resolution-mode="require"/>
 
+declare const __original_require__: typeof require
+
 require('sucrase/register')
 require('zx/globals')
 
 Object.assign(global, {
-    main,
+    __original_require__: __hooked_original_require__,
 })
 
-function main(func) {
-    return (arg) => func(arg)
+function __hooked_original_require__(module: string) {
+    if (module === 'github-script' || module.startsWith('github-script/')) {
+        return { main }
+    }
+
+    return __original_require__(module)
+}
+
+function main(func: Function) {
+    return (arg: unknown) => func(arg)
 }
 
 // const original = Object.freeze({
