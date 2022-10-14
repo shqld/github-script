@@ -105,9 +105,9 @@ jobs:
                 module:
                     - "@shqld/github-acript-test-cjs"
                     - "@shqld/github-acript-test-cjs@1"
-                    - "@shqld/github-acript-test-cjs@^1.0.3"
+                    - "@shqld/github-acript-test-cjs@^1.0.5"
                     - "@shqld/github-acript-test-cjs@1.x"
-                    - "@shqld/github-acript-test-cjs@1.0.3"
+                    - "@shqld/github-acript-test-cjs@1.0.5"
         permissions:
             contents: read
             packages: read

@@ -1,6 +1,6 @@
 {
     "name": "@shqld/github-acript-test-cjs",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "main": "index.js",
     "types": "index.d.js",
     "type": "commonjs"
