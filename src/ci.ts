@@ -4,7 +4,7 @@
 require('sucrase/register')
 require('zx/globals')
 
-require('require-in-the-middle').Hook(
+require('require-in-the-middle')(
     ['@shqld/github-script'],
     { internals: true },
     (_exports, _name, _basedir) => {
