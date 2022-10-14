@@ -1,5 +1,5 @@
 import { ok } from 'node:assert/strict'
-import { main } from '../../src'
+import { main } from '../../src/local'
 
 export default main(
     ({
