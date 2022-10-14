@@ -1,14 +1,27 @@
 /// <reference types="node" resolution-mode="require"/>
 /// <reference types="zx/globals" resolution-mode="require"/>
 
-declare const __original_require__: typeof require
+const __original_require__: typeof require = require
+const __original_original_require__: typeof require = require
 
 require('sucrase/register')
 require('zx/globals')
 
 Object.assign(global, {
+    require: __hooked_require__,
     __original_require__: __hooked_original_require__,
 })
+
+function __hooked_require__(module: string) {
+    if (
+        module === '@shqld/github-script' ||
+        module.startsWith('@shqld/github-script/')
+    ) {
+        return { main }
+    }
+
+    return __original_require__(module)
+}
 
 function __hooked_original_require__(module: string) {
     if (
@@ -18,7 +31,7 @@ function __hooked_original_require__(module: string) {
         return { main }
     }
 
-    return __original_require__(module)
+    return __original_original_require__(module)
 }
 
 function main(func: Function) {
