@@ -2,4 +2,6 @@
 
 set -euo pipefail
 
-node -r . tests/unit/b.ts
+time node -r . tests/unit/b.ts
+
+time tsx tests/unit/ci.ts
