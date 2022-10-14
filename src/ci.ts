@@ -7,14 +7,10 @@ const __original_original_require__: typeof require = require
 require('sucrase/register')
 require('zx/globals')
 
-console.log({ require, __original_require__ })
-
 Object.assign(global, {
     require: __hooked_require__,
     __original_require__: __hooked_original_require__,
 })
-
-console.log({ require, __original_require__ })
 
 function __hooked_require__(module: string) {
     if (
