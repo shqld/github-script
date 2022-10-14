@@ -13,5 +13,5 @@ require('require-in-the-middle')(
 )
 
 function main(func: Function) {
-    return (arg: unknown) => func(arg)
+    return (args: unknown) => func(args)
 }

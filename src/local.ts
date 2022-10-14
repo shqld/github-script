@@ -35,7 +35,13 @@ export type MainFunc = (arg: Arg) => unknown | void | Promise<unknown | void>
 export async function main(func: MainFunc) {
     await import('zx/globals')
 
-    func({
+    const args = await createArgs()
+
+    func(args)
+}
+
+export async function createArgs() {
+    return {
         github: getOctokit(await getAuthToken()),
         context,
         core,
@@ -44,7 +50,7 @@ export async function main(func: MainFunc) {
         exec,
         require,
         __original_require__: require,
-    })
+    }
 }
 
 async function getAuthToken() {

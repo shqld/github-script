@@ -100,19 +100,21 @@ runs:
                   const scriptPath = '${{ inputs.path }}'
 
                   if (scriptPath) {
-                    const script = require(scriptPath)
-                    const main = script.default
+                      const script = require(scriptPath)
+                      const func = script.default
 
-                    if (typeof main === 'function') {
-                        return await main({ 
-                            github,
-                            context,
-                            core,
-                            glob,
-                            io,
-                            exec,
-                            require,
-                            __original_require__,
-                        })
-                    }
+                      if (typeof func === 'function') {
+                          const result = await func({
+                              github,
+                              context,
+                              core,
+                              glob,
+                              io,
+                              exec,
+                              require,
+                              __original_require__,
+                          })
+
+                          return result
+                      }
                   }

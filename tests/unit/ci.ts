@@ -1,5 +1,6 @@
-const { main } = require('@shqld/github-script')
+import { run } from './run'
 
-main(() => {
-    console.log('hello from main')
-})
+run('../../e2e/scripts/args')
+// run('../../e2e/scripts/node_modules')
+run('../../e2e/scripts/success')
+run('../../e2e/scripts/zx')
