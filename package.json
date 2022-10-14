@@ -5,6 +5,10 @@
     "files": [
         "dist"
     ],
+    "exports": {
+        ".": "./dist/local/local.js",
+        "./ci": "./dist/ci/index.js"
+    },
     "type": "commonjs",
     "repository": "https://github.com/shqld/action-script",
     "author": "Sho Miyamoto <me@shqld.dev>",
