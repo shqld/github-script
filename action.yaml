@@ -84,7 +84,7 @@ runs:
               modules_dir: ${{ steps.create-modules-dir.outputs.modules_dir }}
           run: |
               node_modules=$(echo '${{ inputs.node_modules }}' | tr '\n' ' ')
-              yarn add --silent $node_modules --modules-folder ${modules_dir}
+              yarn add $node_modules --modules-folder ${modules_dir}
               # yarn list
 
         - name: Install emtpy package
