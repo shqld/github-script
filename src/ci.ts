@@ -11,7 +11,10 @@ Object.assign(global, {
 })
 
 function __hooked_original_require__(module: string) {
-    if (module === 'github-script' || module.startsWith('github-script/')) {
+    if (
+        module === '@shqld/github-script' ||
+        module.startsWith('@shqld/github-script/')
+    ) {
         return { main }
     }
 
