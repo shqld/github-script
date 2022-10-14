@@ -27,7 +27,6 @@
         "zx": "^7.0.8"
     },
     "devDependencies": {
-        "@shqld/github-script": "./",
         "@vercel/ncc": "^0.34.0",
         "tsx": "^3.10.1",
         "typescript": "^4.8.4"
