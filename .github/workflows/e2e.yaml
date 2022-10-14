@@ -99,15 +99,6 @@ jobs:
 
     node_modules:
         runs-on: ${{ inputs.runs-on }}
-        strategy:
-            fail-fast: true
-            matrix:
-                module:
-                    - "@shqld/github-acript-test-cjs"
-                    - "@shqld/github-acript-test-cjs@1"
-                    - "@shqld/github-acript-test-cjs@^1.0.5"
-                    - "@shqld/github-acript-test-cjs@1.x"
-                    - "@shqld/github-acript-test-cjs@1.0.5"
         permissions:
             contents: read
             packages: read
@@ -129,7 +120,8 @@ jobs:
               uses: ./
               with:
                   node_modules: |
-                      ${{ matrix.module }}
+                      @shqld/github-acript-test-cjs
+                      @shqld/github-acript-test-mjs
                   path: ./e2e/scripts/node_modules.ts
                   registry-url: https://npm.pkg.github.com
               env:
@@ -138,7 +130,8 @@ jobs:
             - name: Check Test Result
               shell: bash
               run: |
-                  test ${{ steps.run-test-script.outputs.result }} = "hello, world"
+                  test ${{ steps.run-test-script.outputs.result.test_cjs }} = "hello, world"
+                  test ${{ steps.run-test-script.outputs.result.test_mjs }} = "hello, world"
 
     inputs:
         runs-on: ${{ inputs.runs-on }}
