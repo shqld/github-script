@@ -32,12 +32,9 @@ jobs:
                   registry-url: "https://npm.pkg.github.com"
                   scope: "@shqld"
             - run: |
-                  ls tests/packages | xargs -I{} sh -c 'cd tests/packages/{}; npm publish'
+                  ls tests/packages | xargs -I{} sh -c 'cd tests/packages/{}; npm publish' || true
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            - if: always()
-              run: |
-                  true
 
     test-ubuntu:
         needs:
