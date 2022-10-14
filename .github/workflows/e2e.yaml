@@ -140,13 +140,6 @@ jobs:
               run: |
                   test ${{ steps.run-test-script.outputs.result }} = "hello, world"
 
-            - name: Check Installed Modules
-              shell: bash
-              run: |
-                  yarn_list=$(yarn list)
-
-                  echo $yarn_list | grep @shqld/github-acript-test-cjs@1
-
     inputs:
         runs-on: ${{ inputs.runs-on }}
         steps:
