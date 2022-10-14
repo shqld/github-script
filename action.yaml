@@ -69,21 +69,6 @@ runs:
               }}
               exit 1
 
-        - name: Yarn add addional modules
-          if: inputs.node_modules
-          shell: bash
-          run: |
-              node_modules=$(echo '${{ inputs.node_modules }}' | tr '\n' ' ')
-              yarn add --silent $node_modules
-              # yarn list
-
-        - name: Normalize 'action_path'
-          id: normalize-action-path
-          shell: bash
-          run: |
-              # https://github.com/actions/runner/issues/1066 
-              echo ::set-output name=action_path::${GITHUB_ACTION_PATH//\\//}
-
         - name: Create node_modules directory
           id: create-modules-dir
           shell: bash
@@ -91,6 +76,16 @@ runs:
               modules_dir="/tmp/${{ github.run_id }}"
               mkdir -p "${modules_dir}"
               echo "::set-output name=modules_dir::${modules_dir}"
+
+        - name: Yarn add addional modules
+          if: inputs.node_modules
+          shell: bash
+          env:
+              modules_dir: ${{ steps.create-modules-dir.outputs.modules_dir }}
+          run: |
+              node_modules=$(echo '${{ inputs.node_modules }}' | tr '\n' ' ')
+              yarn add --silent $node_modules --modules-folder ${modules_dir}
+              # yarn list
 
         - name: Install emtpy package
           shell: bash
@@ -107,6 +102,13 @@ runs:
                       return (args) => func(args)
                   }
               EOF
+
+        - name: Normalize 'action_path'
+          id: normalize-action-path
+          shell: bash
+          run: |
+              # https://github.com/actions/runner/issues/1066 
+              echo ::set-output name=action_path::${GITHUB_ACTION_PATH//\\//}
 
         - uses: actions/github-script@v6
           id: run-script
