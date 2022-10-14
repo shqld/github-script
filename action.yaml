@@ -69,30 +69,29 @@ runs:
               }}
               exit 1
 
-        - name: Create node_modules directory
-          id: create-modules-dir
+        - name: Create workspace dir
+          id: create-workspace-dir
           shell: bash
           run: |
-              modules_dir="/tmp/${{ github.run_id }}"
-              mkdir -p "${modules_dir}"
-              echo "::set-output name=modules_dir::${modules_dir}"
+              workspace_dir="/tmp/${{ github.run_id }}"
+              mkdir -p "${workspace_dir}"
+              echo "::set-output name=workspace_dir::${workspace_dir}"
 
         - name: Yarn add addional modules
           if: inputs.node_modules
           shell: bash
-          env:
-              modules_dir: ${{ steps.create-modules-dir.outputs.modules_dir }}
+          working-directory: ${{ steps.create-workspace-dir.outputs.workspace_dir }}
           run: |
               node_modules=$(echo '${{ inputs.node_modules }}' | tr '\n' ' ')
-              yarn add $node_modules --modules-folder ${modules_dir}
+              yarn add $node_modules
               # yarn list
 
         - name: Install emtpy package
           shell: bash
           env:
-              modules_dir: ${{ steps.create-modules-dir.outputs.modules_dir }}
+              workspace_dir: ${{ steps.create-workspace-dir.outputs.workspace_dir }}
           run: |
-              package_dir="${modules_dir}/@shqld/github-script"
+              package_dir="${workspace_dir}/node_modules/@shqld/github-script"
               mkdir -p ${package_dir}
               cat << EOF >> ${package_dir}/package.json
                   { "name": "@shqld/github-script", "main": "index.js" }
@@ -113,7 +112,7 @@ runs:
         - uses: actions/github-script@v6
           id: run-script
           env:
-              NODE_PATH: ${{ steps.create-modules-dir.outputs.modules_dir }}
+              NODE_PATH: ${{ steps.create-workspace-dir.outputs.workspace_dir }}/node_modules
           with:
               github-token: ${{ inputs.github-token }}
               debug: ${{ inputs.debug }}
