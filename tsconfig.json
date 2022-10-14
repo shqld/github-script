@@ -5,5 +5,5 @@
       "module": "CommonJS",
       "esModuleInterop": true,
     },
-    "exclude": ["./tests/*"],
+    "exclude": ["./tests/*", "./e2e/*"],
 }

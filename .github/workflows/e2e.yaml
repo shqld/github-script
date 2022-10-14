@@ -9,37 +9,37 @@ on:
                 required: true
 
 jobs:
-    exports:
-        runs-on: ${{ inputs.runs-on }}
-        strategy:
-            fail-fast: true
-            matrix:
-                script:
-                    - ./tests/integration/exports/default-arrow-async.ts
-                    - ./tests/integration/exports/default-arrow.ts
-                    - ./tests/integration/exports/default-function-async.ts
-                    - ./tests/integration/exports/default-function.ts
-                    - ./tests/integration/exports/main-const-async.ts
-                    - ./tests/integration/exports/main-const.ts
-                    - ./tests/integration/exports/main-function-async.ts
-                    - ./tests/integration/exports/main-function.ts
-        steps:
-            - uses: actions/checkout@v3
-            - uses: actions/download-artifact@v3
-              with:
-                  name: dist
-                  path: dist
+    # exports:
+    #     runs-on: ${{ inputs.runs-on }}
+    #     strategy:
+    #         fail-fast: true
+    #         matrix:
+    #             script:
+    #                 - ./e2e/scripts/exports/default-arrow-async.ts
+    #                 - ./e2e/scripts/exports/default-arrow.ts
+    #                 - ./e2e/scripts/exports/default-function-async.ts
+    #                 - ./e2e/scripts/exports/default-function.ts
+    #                 - ./e2e/scripts/exports/main-const-async.ts
+    #                 - ./e2e/scripts/exports/main-const.ts
+    #                 - ./e2e/scripts/exports/main-function-async.ts
+    #                 - ./e2e/scripts/exports/main-function.ts
+    #     steps:
+    #         - uses: actions/checkout@v3
+    #         - uses: actions/download-artifact@v3
+    #           with:
+    #               name: dist
+    #               path: dist
 
-            - name: Run Test Script
-              id: run-test-script
-              uses: ./
-              with:
-                  path: ${{ matrix.script }}
+    #         - name: Run Test Script
+    #           id: run-test-script
+    #           uses: ./
+    #           with:
+    #               path: ${{ matrix.script }}
 
-            - name: Check Test Result
-              shell: bash
-              run: |
-                  test ${{ steps.run-test-script.outputs.result }} = "hello, world"
+    #         - name: Check Test Result
+    #           shell: bash
+    #           run: |
+    #               test ${{ steps.run-test-script.outputs.result }} = "hello, world"
 
     fail-in-script:
         runs-on: ${{ inputs.runs-on }}
@@ -55,7 +55,7 @@ jobs:
               continue-on-error: true
               uses: ./
               with:
-                  path: ./tests/integration/failure.ts
+                  path: ./e2e/scripts/failure.ts
 
             - name: Check Test Result
               shell: bash
@@ -75,7 +75,7 @@ jobs:
               id: run-test-script
               uses: ./
               with:
-                  path: ./tests/integration/args.ts
+                  path: ./e2e/scripts/args.ts
 
     zx:
         runs-on: ${{ inputs.runs-on }}
@@ -90,7 +90,7 @@ jobs:
               id: run-test-script
               uses: ./
               with:
-                  path: ./tests/integration/zx.ts
+                  path: ./e2e/scripts/zx.ts
 
             - name: Check Test Result
               shell: bash
@@ -130,7 +130,7 @@ jobs:
               with:
                   node_modules: |
                       ${{ matrix.module }}
-                  path: ./tests/integration/node_modules.ts
+                  path: ./e2e/scripts/node_modules.ts
                   registry-url: https://npm.pkg.github.com
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -174,7 +174,7 @@ jobs:
               continue-on-error: true
               uses: ./
               with:
-                  path: ./tests/integration/success.ts
+                  path: ./e2e/scripts/success.ts
 
             - name: Run Test Script / Only script
               id: run-test-script-only-script

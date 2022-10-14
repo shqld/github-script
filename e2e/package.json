@@ -1,0 +1,9 @@
+{
+    "name": "e2e",
+    "private": true,
+    "version": "1.0.0",
+    "main": "index.js",
+    "devDependencies": {
+        "@shqld/github-script": ".."
+    }
+}

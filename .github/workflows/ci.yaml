@@ -48,23 +48,23 @@ jobs:
         needs:
             - build
             - publish-test-packages
-        uses: ./.github/workflows/integration-test.yaml
+        uses: ./.github/workflows/e2e.yaml
         with:
             runs-on: ubuntu-latest
 
-    test-windows:
-        needs:
-            - build
-            - publish-test-packages
-        uses: ./.github/workflows/integration-test.yaml
-        with:
-            runs-on: windows-latest
+    # test-windows:
+    #     needs:
+    #         - build
+    #         - publish-test-packages
+    #     uses: ./.github/workflows/e2e.yaml
+    #     with:
+    #         runs-on: windows-latest
 
     staging:
         needs:
             - build
             - test-ubuntu
-            - test-windows
+            # - test-windows
         concurrency:
             group: staging
             cancel-in-progress: false

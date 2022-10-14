@@ -1,5 +1,5 @@
 import { ok } from 'node:assert/strict'
-import { main } from '../../src/local'
+import { main } from '@shqld/github-script'
 
 export default main(
     ({
