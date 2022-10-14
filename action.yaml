@@ -27,6 +27,11 @@ inputs:
             ---
             By default, specified modules are installed in the working directory.
         required: false
+    registry-url:
+        description: |
+            Regitry URL where to install packages
+        required: false
+        default: "https://registry.npmjs.org"
 
     # inherits from https://github.com/actions/github-script
     github-token:
@@ -64,13 +69,38 @@ runs:
               }}
               exit 1
 
+        - name: Create workspace dir
+          id: create-workspace-dir
+          shell: bash
+          run: |
+              workspace_dir="/tmp/${{ github.run_id }}"
+              mkdir -p "${workspace_dir}"
+              echo "::set-output name=workspace_dir::${workspace_dir}"
+
         - name: Yarn add addional modules
           if: inputs.node_modules
           shell: bash
+          working-directory: ${{ steps.create-workspace-dir.outputs.workspace_dir }}
           run: |
               node_modules=$(echo '${{ inputs.node_modules }}' | tr '\n' ' ')
-              yarn add --silent $node_modules
-              yarn list
+              yarn add $node_modules
+              # yarn list
+
+        - name: Install emtpy package
+          shell: bash
+          env:
+              workspace_dir: ${{ steps.create-workspace-dir.outputs.workspace_dir }}
+          run: |
+              package_dir="${workspace_dir}/node_modules/@shqld/github-script"
+              mkdir -p ${package_dir}
+              cat << EOF >> ${package_dir}/package.json
+                  { "name": "@shqld/github-script", "main": "index.js" }
+              EOF
+              cat << EOF >> ${package_dir}/index.js
+                  module.exports.main = (func) => {
+                      return (args) => func(args)
+                  }
+              EOF
 
         - name: Normalize 'action_path'
           id: normalize-action-path
@@ -81,6 +111,8 @@ runs:
 
         - uses: actions/github-script@v6
           id: run-script
+          env:
+              NODE_PATH: ${{ steps.create-workspace-dir.outputs.workspace_dir }}/node_modules
           with:
               github-token: ${{ inputs.github-token }}
               debug: ${{ inputs.debug }}
@@ -88,26 +120,28 @@ runs:
               previews: ${{ inputs.previews }}
               result-encoding: ${{ inputs.result-encoding }}
               script: |
-                  __original_require__('${{ steps.normalize-action-path.outputs.action_path }}')
+                  __original_require__('${{ steps.normalize-action-path.outputs.action_path }}dist/index.js')
 
                   ${{ inputs.script }}
 
                   const scriptPath = '${{ inputs.path }}'
 
                   if (scriptPath) {
-                    const script = require(scriptPath)
-                    const main = script.default ?? script.main
+                      const script = require(scriptPath)
+                      const func = script.default
 
-                    if (typeof main === 'function') {
-                        return await main({ 
-                            github,
-                            context,
-                            core,
-                            glob,
-                            io,
-                            exec,
-                            require,
-                            __original_require__,
-                        })
-                    }
+                      if (typeof func === 'function') {
+                          const result = await func({
+                              github,
+                              context,
+                              core,
+                              glob,
+                              io,
+                              exec,
+                              require,
+                              __original_require__,
+                          })
+
+                          return result
+                      }
                   }

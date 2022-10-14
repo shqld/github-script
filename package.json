@@ -1,12 +1,19 @@
 {
-    "name": "github-script",
+    "name": "@shqld/github-script",
     "version": "1.0.0",
-    "main": "dist/index.js",
-    "repository": "https://github.com/shqld/action-script",
+    "main": "./dist/local/local.js",
+    "files": [
+        "dist"
+    ],
+    "type": "commonjs",
+    "repository": "https://github.com/shqld/github-script",
     "author": "Sho Miyamoto <me@shqld.dev>",
     "license": "MIT",
     "scripts": {
-        "build": "ncc build src/index.ts -o dist --minify"
+        "build": "yarn build:local && yarn build:ci",
+        "build:local": "tsc --outDir dist/local",
+        "build:ci": "ncc build src/ci.ts -o dist/ci --minify",
+        "test": "ls tests/unit/*.sh | xargs -P0 -n1 bash"
     },
     "dependencies": {
         "@actions/core": "^1.9.1",
@@ -14,13 +21,14 @@
         "@actions/github": "^5.0.3",
         "@actions/glob": "^0.3.0",
         "@actions/io": "^1.1.2",
-        "@octokit/rest": "^19.0.4",
         "@types/node": "^18.7.18",
+        "require-in-the-middle": "^5.2.0",
+        "sucrase": "^3.27.0",
         "zx": "^7.0.8"
     },
     "devDependencies": {
         "@vercel/ncc": "^0.34.0",
-        "sucrase": "^3.27.0",
-        "typescript": "^4.8.3"
+        "tsx": "^3.10.1",
+        "typescript": "^4.8.4"
     }
 }
