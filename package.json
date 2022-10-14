@@ -1,12 +1,12 @@
 {
-    "name": "github-script",
+    "name": "@shqld/github-script",
     "version": "1.0.0",
     "main": "./dist/local/local.js",
     "files": [
         "dist"
     ],
     "type": "commonjs",
-    "repository": "https://github.com/shqld/action-script",
+    "repository": "https://github.com/shqld/github-script",
     "author": "Sho Miyamoto <me@shqld.dev>",
     "license": "MIT",
     "scripts": {
